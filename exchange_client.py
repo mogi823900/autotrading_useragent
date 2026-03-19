@@ -122,9 +122,28 @@ class AgentExchangeClient:
         qty_step = info["qtyStep"]
         return (qty / qty_step).quantize(Decimal("1"), rounding=ROUND_DOWN) * qty_step
 
+    @staticmethod
+    def _safe_tick_for_price(price: Decimal) -> Decimal:
+        """가격 기반 tick size 추정 (ccxt 데이터 없을 때 fallback용)"""
+        if price < Decimal("0.0001"):   return Decimal("0.00000001")  # SHIB 등
+        elif price < Decimal("0.01"):   return Decimal("0.000001")
+        elif price < Decimal("0.1"):    return Decimal("0.00001")     # DOGE
+        elif price < Decimal("10"):     return Decimal("0.0001")
+        elif price < Decimal("100"):    return Decimal("0.001")
+        elif price < Decimal("10000"):  return Decimal("0.01")        # ETH
+        else:                           return Decimal("0.1")          # BTC
+
     def round_price(self, symbol: str, price: Decimal) -> Decimal:
         info = self.get_instrument_info(symbol)
         tick = info["tickSize"]
+        # 안전 검사: tick이 가격의 10% 초과 → 잘못된 tick (fallback 오염)
+        if tick > price * Decimal("0.1"):
+            safe_tick = self._safe_tick_for_price(price)
+            logger.warning(
+                f"[{symbol}] tick={tick} seems wrong for price={price}, "
+                f"using estimated tick={safe_tick}"
+            )
+            tick = safe_tick
         return (price / tick).quantize(Decimal("1"), rounding=ROUND_DOWN) * tick
 
     # ===== 잔고 조회 =====
