@@ -495,7 +495,9 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.post("/execute")
 @limiter.limit("30/minute")
-async def execute_order(http_request: Request, request: ExecuteRequest):
+async def execute_order(request: Request, execute_req: ExecuteRequest):
+    request_obj = request
+    request = execute_req
     """
     중앙 서버에서 전달받은 주문 실행
 
