@@ -14,8 +14,8 @@ class AgentSettings(BaseSettings):
     api_secret: str
     api_passphrase: str = ""      # Bitget/OKX 전용
 
-    # 추천인 코드 (마케터의 Bitget UID — 에이전트 등록 시 필수)
-    referral_code: str = ""
+    # 추천인 코드 (파트너의 Bitget UID — 에이전트 등록 시 필수)
+    partner_code: str = ""
 
     # Agent 인증 (형식: {supabase_user_id}:{32바이트_hex})
     agent_token: str              # 앱에서 발급받은 토큰

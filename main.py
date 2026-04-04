@@ -128,7 +128,7 @@ async def register_with_central(agent_url: str):
                     "agent_url": agent_url,
                     "agent_token": settings.agent_token,
                     "exchange": settings.exchange,
-                    "referral_code": settings.referral_code,
+                    "partner_code": settings.partner_code,
                 }
             )
             if resp.status_code == 200:
@@ -804,7 +804,7 @@ async def get_uid(authorization: str = Header(None)):
         return {
             "uid": uid,
             "exchange": settings.exchange,
-            "referral_code": settings.referral_code,
+            "partner_code": settings.partner_code,
         }
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e))
